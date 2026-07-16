@@ -1,0 +1,487 @@
+:root {
+    --bg-dark: #11011f;
+    --royal-purple: #2c0c4c;
+    --olympus-gold: #ffd700;
+    --lightning-blue: #00f0ff;
+    --dark-maroon: #4a031e;
+    --neon-green: #3bf13b;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial Black', Impact, sans-serif;
+    user-select: none;
+}
+
+body {
+    background: radial-gradient(circle at 50% 30%, #3d1466 0%, var(--bg-dark) 100%);
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Fondo del Olimpo animado */
+.olympus-bg {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        radial-gradient(circle at 20% 20%, rgba(0, 240, 255, 0.15) 0%, transparent 30%),
+        radial-gradient(circle at 80% 60%, rgba(255, 215, 0, 0.1) 0%, transparent 40%);
+    animation: lightningPulse 8s infinite alternate;
+    z-index: 0;
+}
+
+@keyframes lightningPulse {
+    0% { filter: brightness(1); }
+    92% { filter: brightness(1); }
+    93% { filter: brightness(1.6); background-color: rgba(0, 240, 255, 0.1); }
+    94% { filter: brightness(1); }
+    96% { filter: brightness(1.8); }
+    100% { filter: brightness(1); }
+}
+
+/* Contenedor Principal */
+.game-container {
+    display: flex;
+    width: 95vw;
+    max-width: 1180px;
+    height: 88vh;
+    max-height: 650px;
+    background: rgba(20, 5, 35, 0.65);
+    border: 2px solid rgba(255, 215, 0, 0.3);
+    border-radius: 32px;
+    padding: 16px;
+    box-shadow: 0 30px 60px rgba(0,0,0,0.6), inset 0 0 20px rgba(0, 240, 255, 0.2);
+    backdrop-filter: blur(12px);
+    gap: 15px;
+    z-index: 1;
+}
+
+/* Panel Lateral */
+.side-panel {
+    width: 23%;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    justify-content: center;
+}
+
+.btn-buy {
+    border: 3px solid var(--olympus-gold);
+    border-radius: 20px;
+    padding: 12px;
+    color: white;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    box-shadow: 0 8px 0px rgba(0,0,0,0.4), 0 0 15px rgba(255, 215, 0, 0.2);
+    transition: transform 0.05s, box-shadow 0.05s;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-buy::before {
+    content: '';
+    position: absolute;
+    top: 2px; left: 5%; width: 90%; height: 35%;
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 10px;
+}
+
+.btn-buy:active {
+    transform: translateY(4px);
+    box-shadow: 0 4px 0px rgba(0,0,0,0.4);
+}
+
+.royal-blue { background: linear-gradient(to bottom, #1954bc, #0a2351); }
+.royal-gold { background: linear-gradient(to bottom, #d4af37, #8a6609); }
+
+.btn-title {
+    font-size: 11px;
+    text-shadow: 2px 2px 0px #000;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+.btn-value {
+    font-size: 20px;
+    text-shadow: 2px 2px 0px #000;
+    color: var(--olympus-gold);
+    margin-top: 4px;
+}
+
+/* Caja de Apuesta Extra Ante */
+.bet-double-box {
+    background: linear-gradient(to bottom, #2d5a27, #11280f);
+    border: 3px solid var(--olympus-gold);
+    border-radius: 20px;
+    padding: 12px;
+    color: white;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-shadow: 2px 2px 0px #000;
+    box-shadow: 0 8px 0px rgba(0,0,0,0.4);
+    position: relative;
+}
+
+.bet-double-title { font-size: 11px; color: var(--olympus-gold); }
+.bet-double-value { font-size: 22px; margin: 4px 0; color: #fff; }
+.bet-double-sub { font-size: 8px; text-align: center; margin-bottom: 8px; opacity: 0.9; }
+
+/* Switch Slider */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.toggle-text { font-size: 10px; }
+
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 44px;
+    height: 18px;
+}
+.switch input { display: none; }
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: #555;
+    transition: .3s;
+    border: 1px solid var(--olympus-gold);
+}
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 12px; width: 12px;
+    left: 3px; bottom: 2px;
+    background-color: white;
+    transition: .3s;
+}
+input:checked + .slider { background-color: var(--olympus-gold); }
+input:checked + .slider:before { transform: translateX(24px); background-color: #000; }
+.slider.round { border-radius: 18px; }
+.slider.round:before { border-radius: 50%; }
+
+/* Área Principal */
+.main-game {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+}
+
+/* MARCADORES DEL BONUS ARRIBA */
+.bonus-header-container {
+    display: none;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 5px;
+    animation: floaty 3s ease-in-out infinite alternate;
+}
+
+@keyframes floaty {
+    0% { transform: translateY(0px); }
+    100% { transform: translateY(-4px); }
+}
+
+.bonus-header-win, .global-mult-box {
+    background: linear-gradient(135deg, #3d1466, #11011f);
+    border: 3px solid var(--olympus-gold);
+    border-radius: 18px;
+    padding: 8px 18px;
+    text-align: center;
+    box-shadow: 0 8px 15px rgba(0,0,0,0.5), inset 0 0 10px rgba(0, 240, 255, 0.3);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.bonus-title, .mult-title {
+    font-size: 10px;
+    color: #ccc;
+    letter-spacing: 1px;
+    text-shadow: 1px 1px 0px #000;
+}
+
+.bonus-total-amount {
+    font-size: 22px;
+    color: var(--olympus-gold);
+    text-shadow: 2px 2px 0px #000;
+}
+
+.mult-value {
+    font-size: 22px;
+    color: var(--lightning-blue);
+    text-shadow: 0 0 10px var(--lightning-blue), 2px 2px 0px #000;
+}
+
+/* ACUMULADOR DE POZO DEL TIRO EN CURSO */
+.spin-win-accumulator {
+    background: rgba(10, 2, 20, 0.9);
+    border: 2px solid var(--lightning-blue);
+    border-radius: 30px;
+    padding: 6px 15px;
+    display: none; 
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+    box-shadow: 0 0 15px rgba(0, 240, 255, 0.4);
+    animation: scaleIn 0.2s ease-out;
+}
+
+.accum-label { font-size: 11px; color: #aaa; }
+.accum-value { font-size: 18px; color: #fff; text-shadow: 0 0 10px var(--olympus-gold); }
+.accum-mult { font-size: 18px; color: var(--lightning-blue); font-weight: bold; }
+
+/* Contenedor Grilla */
+.slot-grid-container {
+    flex-grow: 1;
+    position: relative;
+    border: 6px solid var(--olympus-gold);
+    border-radius: 20px;
+    box-shadow: 0 15px 35px rgba(0,0,0,0.7), 0 0 25px rgba(255, 215, 0, 0.2);
+    background: linear-gradient(135deg, #1b0630, #0c0217);
+    overflow: hidden;
+    display: flex; 
+    flex-direction: column;
+}
+
+/* Grilla Interna */
+.slot-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(5, 1fr);
+    gap: 6px;
+    padding: 8px;
+    flex-grow: 1;
+    min-height: 0; 
+}
+
+/* Celdas de Gemas y Reliquias */
+.slot-cell {
+    background: rgba(45, 15, 75, 0.5);
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2.5rem;
+    box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
+    position: relative;
+    transition: transform 0.2s;
+    min-height: 0; 
+    min-width: 0;
+}
+
+/* Gemas y otros símbolos */
+.slot-cell img {
+    width: 90%;
+    height: 90%;
+    object-fit: contain; 
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8)); 
+    display: inline-block;
+    transition: transform 0.2s ease;
+}
+
+/* Modificación específica para el Scatter de Zeus (bloque completo) */
+.slot-cell img[alt="zeus"] {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; 
+    border-radius: 11px; 
+    filter: none; 
+}
+
+/* Animación de Caída Genuina */
+.slot-cell.landing {
+    animation: olympusFall 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes olympusFall {
+    0% { transform: translateY(-80px) scale(0.8); opacity: 0; }
+    100% { transform: translateY(0) scale(1); opacity: 1; }
+}
+
+/* Orbes Multiplicadores de Zeus */
+.bomb-badge {
+    position: absolute;
+    bottom: 3px;
+    right: 3px;
+    background: radial-gradient(circle, #00f0ff, #0044ff);
+    color: white;
+    font-size: 11px;
+    padding: 2px 6px;
+    border-radius: 8px;
+    border: 1.5px solid var(--olympus-gold);
+    text-shadow: 1px 1px 2px black;
+    box-shadow: 0 0 10px var(--lightning-blue);
+    font-weight: bold;
+    z-index: 5; 
+}
+
+/* Animaciones de Juego usando etiquetas img */
+.slot-cell.spinning img { animation: spinFall 0.1s infinite linear; }
+.slot-cell.win-pop { animation: popOut 0.4s forwards; }
+
+.slot-cell.win-highlight {
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.6) 0%, rgba(75, 15, 125, 0.8) 100%);
+    border-color: var(--olympus-gold);
+    transform: scale(1.08);
+    box-shadow: 0 0 20px var(--olympus-gold);
+    z-index: 2;
+}
+
+.slot-cell.bomb-pulse { animation: orbPulseAnimation 0.5s infinite alternate; }
+
+@keyframes orbPulseAnimation {
+    0% { transform: scale(1); box-shadow: 0 0 10px var(--lightning-blue); }
+    100% { transform: scale(1.15); box-shadow: 0 0 30px var(--olympus-gold); }
+}
+
+/* Barra de Control Inferior */
+.control-bar {
+    background: linear-gradient(to right, #11011f, #2c0c4c, #11011f);
+    border-radius: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 6px 20px;
+    color: white;
+    border: 2px solid var(--olympus-gold);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+    margin-top: 10px;
+}
+
+.info-btn {
+    background: #222;
+    color: var(--olympus-gold);
+    width: 30px; height: 30px;
+    border: 2px solid var(--olympus-gold);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 16px;
+    transition: transform 0.1s;
+}
+
+.info-btn:hover { transform: scale(1.1); }
+
+.stats-section { display: flex; gap: 20px; }
+.stat-box { display: flex; flex-direction: column; align-items: center; }
+.stat-label { font-size: 8px; color: #aaa; }
+.stat-value { font-size: 15px; color: var(--olympus-gold); }
+.stat-value.win { color: var(--neon-green); }
+
+.status-msg {
+    font-size: 11px; color: #fff;
+    text-align: center; max-width: 250px;
+    text-transform: uppercase; letter-spacing: 0.5px;
+}
+
+.spin-section { display: flex; align-items: center; gap: 10px; }
+
+.bet-adjust {
+    background: #222; color: var(--olympus-gold);
+    border: 1px solid var(--olympus-gold);
+    width: 28px; height: 28px;
+    border-radius: 50%; font-size: 18px;
+    cursor: pointer; display: flex;
+    align-items: center; justify-content: center;
+}
+
+.spin-outer {
+    background: linear-gradient(to bottom, var(--olympus-gold), #8a6609);
+    padding: 3px; border-radius: 50%;
+}
+
+.spin-btn {
+    background: radial-gradient(circle, #2c0c4c, #11011f);
+    color: var(--olympus-gold);
+    border: 2px solid var(--olympus-gold);
+    width: 52px; height: 52px;
+    border-radius: 50%; font-size: 26px;
+    cursor: pointer; box-shadow: 0 5px 10px rgba(0,0,0,0.6);
+    display: flex; align-items: center; justify-content: center;
+    transition: transform 0.05s;
+}
+
+.spin-btn:active { transform: scale(0.9); }
+
+/* Overlays */
+.fs-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.85);
+    display: none; justify-content: center; align-items: center;
+    z-index: 100;
+}
+
+.fs-box {
+    background: linear-gradient(135deg, #2c0c4c, #11011f);
+    padding: 45px; border-radius: 28px;
+    border: 6px solid var(--olympus-gold);
+    color: white; text-align: center;
+    box-shadow: 0 0 50px var(--lightning-blue);
+    animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.fs-box h2 { font-size: 36px; margin-bottom: 12px; text-shadow: 3px 3px 0px #000; color: var(--lightning-blue); }
+.fs-box p { font-size: 22px; text-shadow: 2px 2px 0px #000; color: var(--olympus-gold); }
+
+/* MODAL DE INFORMACIÓN */
+.info-modal {
+    position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+    background: rgba(0, 0, 0, 0.85);
+    display: none; justify-content: center; align-items: center;
+    z-index: 200;
+}
+
+.info-content {
+    background: linear-gradient(135deg, #1b0630 0%, #0c0217 100%);
+    border: 5px solid var(--olympus-gold);
+    border-radius: 28px; width: 90%; max-width: 600px; max-height: 80vh;
+    padding: 24px; color: white; position: relative;
+    box-shadow: 0 0 40px rgba(0, 240, 255, 0.3);
+    display: flex; flex-direction: column;
+    animation: scaleUp 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.info-content h2 { font-size: 24px; text-align: center; margin-bottom: 15px; color: var(--olympus-gold); text-shadow: 2px 2px 0px #000; }
+
+.info-scroll { overflow-y: auto; padding-right: 10px; }
+.info-scroll::-webkit-scrollbar { width: 8px; }
+.info-scroll::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
+.info-scroll::-webkit-scrollbar-thumb { background: var(--olympus-gold); border-radius: 10px; }
+
+.info-scroll h3 { font-size: 14px; color: var(--lightning-blue); margin-top: 15px; margin-bottom: 8px; letter-spacing: 0.5px; }
+.info-scroll p, .info-scroll ul { font-size: 11px; line-height: 1.5; font-family: 'Arial', sans-serif; color: #ddd; margin-bottom: 10px; }
+.info-scroll ul { padding-left: 18px; }
+.info-scroll hr { border: 0; height: 2px; background: linear-gradient(to right, transparent, rgba(255, 215, 0, 0.3), transparent); margin: 15px 0; }
+
+.payout-table { width: 100%; border-collapse: collapse; margin: 12px 0; font-size: 11px; }
+.payout-table th, .payout-table td { padding: 6px; text-align: center; border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
+.payout-table th { background: rgba(255, 215, 0, 0.1); color: var(--olympus-gold); font-size: 10px; }
+.payout-table td:first-child { font-size: 14px; }
+
+.close-modal { position: absolute; top: 15px; right: 20px; font-size: 32px; color: #aaa; cursor: pointer; transition: 0.2s; }
+.close-modal:hover { color: #ff3333; transform: scale(1.1); }
+
+/* Animaciones */
+@keyframes spinFall { 0% { transform: translateY(-12px); } 100% { transform: translateY(12px); } }
+@keyframes popOut { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.5; } 100% { transform: scale(0); opacity: 0; } }
+@keyframes scaleUp { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+@keyframes scaleIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
