@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <!-- Se ajustó el viewport para evitar el zoom accidental en celulares -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Zeus of the Olympus</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Efecto de tormenta y relámpagos de fondo -->
+    <div class="olympus-bg"></div>
+
+    <div class="game-container">
+        <!-- PANEL LATERAL IZQUIERDO -->
+        <div class="side-panel">
+            <button class="btn-buy royal-blue" id="btn-buy-free">
+                <span class="btn-title">COMPRAR GIROS GRATIS</span>
+                <span class="btn-value" id="buy-fs-cost">$200.00</span>
+            </button>
+            <button class="btn-buy royal-gold" id="btn-buy-super">
+                <span class="btn-title">COMPRAR SUPER GIROS</span>
+                <span class="btn-value" id="buy-super-cost">$1,000.00</span>
+            </button>
+            
+            <div class="bet-double-box">
+                <span class="bet-double-title">APUESTA ANTE</span>
+                <span class="bet-double-value" id="double-bet-display">$2.50</span>
+                <span class="bet-double-sub">DOBLE CHANCE DE GANAR</span>
+                <div class="toggle-container">
+                    <span class="toggle-text">OFF</span>
+                    <label class="switch">
+                        <input type="checkbox" id="double-chance-toggle">
+                        <span class="slider round"></span>
+                    </label>
+                    <span class="toggle-text">ON</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ÁREA PRINCIPAL DEL JUEGO -->
+        <div class="main-game">
+            <!-- MARCADOR DEL BONUS Y MULTIPLICADOR GLOBAL (Solo activo en Giros Gratis) -->
+            <div class="bonus-header-container" id="bonus-header-container">
+                <div class="bonus-header-win">
+                    <div class="bonus-title">GANANCIA DEL BONUS</div>
+                    <div class="bonus-total-amount" id="bonus-total-amount">$0.00</div>
+                </div>
+                <div class="global-mult-box" id="global-mult-box">
+                    <div class="mult-title">MULT. GLOBAL</div>
+                    <div class="mult-value" id="global-mult-value">x1</div>
+                </div>
+            </div>
+
+            <!-- ACUMULADOR TEMPORAL DEL TIRO EN CURSO -->
+            <div class="spin-win-accumulator" id="spin-win-accumulator">
+                <span class="accum-label">GANANCIA CASCADA:</span>
+                <span class="accum-value" id="accum-value">$0.00</span>
+                <span class="accum-mult" id="accum-mult"></span>
+            </div>
+
+            <!-- Grilla Gates of Olympus con Marco de Oro -->
+            <div class="slot-grid-container">
+                <div class="slot-grid" id="slot-grid">
+                    <!-- Se genera con JavaScript -->
+                </div>
+            </div>
+
+            <!-- BARRA DE CONTROL INFERIOR -->
+            <div class="control-bar">
+                <div class="info-section">
+                    <button class="info-btn" id="info-btn">i</button>
+                </div>
+                
+                <div class="stats-section">
+                    <div class="stat-box">
+                        <span class="stat-label">CRÉDITO</span>
+                        <span class="stat-value" id="credit-display">$10,000.00</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">APUESTA</span>
+                        <span class="stat-value" id="bet-display">$2.00</span>
+                    </div>
+                    <div class="stat-box">
+                        <span class="stat-label">ÚLTIMO PREMIO</span>
+                        <span class="stat-value win" id="win-display">$0.00</span>
+                    </div>
+                </div>
+
+                <div class="status-msg" id="status-message">
+                    ¡QUE LOS DIOSES TE BENDIGAN!
+                </div>
+
+                <div class="spin-section">
+                    <button class="bet-adjust" id="bet-minus">-</button>
+                    <div class="spin-outer">
+                        <button class="spin-btn" id="spin-button">↻</button>
+                    </div>
+                    <button class="bet-adjust" id="bet-plus">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PANTALLA ANUNCIO DE GIROS GRATIS -->
+    <div class="fs-overlay" id="fs-overlay">
+        <div class="fs-box">
+            <h2 id="fs-overlay-title">¡LA IRA DE ZEUS!</h2>
+            <p id="fs-count">15 GIROS GANADOS</p>
+        </div>
+    </div>
+
+    <!-- PANTALLA DE REGLAS E INFORMACIÓN (MODAL) -->
+    <div class="info-modal" id="info-modal">
+        <div class="info-content">
+            <span class="close-modal" id="close-modal">&times;</span>
+            <h2>⚡ GATES OF OLYMPUS 🏛️</h2>
+            <div class="info-scroll">
+                <h3>MECÁNICA PRINCIPAL</h3>
+                <p><strong>"Pay Anywhere":</strong> Los premios se otorgan al conseguir <strong>8 o más símbolos idénticos</strong> en cualquier posición de la grilla de 6x5. No existen líneas de pago tradicionales.</p>
+                <p><strong>Sistema de Cascada (Tumble):</strong> Los símbolos ganadores desaparecen tras pagar. Los elementos restantes caen hacia el fondo y nuevas gemas y reliquias caen desde lo alto del Olimpo para permitir victorias ilimitadas.</p>
+
+                <hr>
+
+                <h3>TABLA DE PAGOS (Basada en tu Apuesta)</h3>
+                <table class="payout-table">
+                    <thead>
+                        <tr>
+                            <th>Símbolo</th>
+                            <th>8 - 9</th>
+                            <th>10 - 11</th>
+                            <th>12 o más</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr><td>👑 Corona del Rey</td><td>x10.0</td><td>x25.0</td><td>x50.0</td></tr>
+                        <tr><td>⏳ Reloj de Arena</td><td>x5.0</td><td>x10.0</td><td>x25.0</td></tr>
+                        <tr><td>💍 Anillo de Oro</td><td>x4.0</td><td>x7.5</td><td>x15.0</td></tr>
+                        <tr><td>🏆 Cáliz Sagrado</td><td>x3.0</td><td>x5.0</td><td>x12.0</td></tr>
+                        <tr><td>🔴 Gema Roja</td><td>x2.0</td><td>x3.0</td><td>x10.0</td></tr>
+                        <tr><td>🟣 Gema Morada</td><td>x1.5</td><td>x2.0</td><td>x8.0</td></tr>
+                        <tr><td>🟡 Gema Amarilla</td><td>x1.0</td><td>x1.5</td><td>x5.0</td></tr>
+                        <tr><td>🟢 Gema Verde</td><td>x0.8</td><td>x1.0</td><td>x4.0</td></tr>
+                        <tr><td>🔵 Gema Azul</td><td>x0.5</td><td>x0.8</td><td>x2.0</td></tr>
+                        <tr><td>⚡ Zeus (Scatter)</td><td colspan="3">4+ en pantalla paga x15.0 y activa 15 Giros Gratis</td></tr>
+                    </tbody>
+                </table>
+
+                <hr>
+
+                <h3>ORBES Y MULTIPLICADOR GLOBAL</h3>
+                <p><strong>Orbes Divinos (🔮):</strong> Zeus puede lanzar orbes multiplicadores de entre <strong>x2 hasta x500</strong> en cualquier giro, tanto en el juego base como en el bonus.</p>
+                <p><strong>EL MULTIPLICADOR GLOBAL (Bonus):</strong> Durante los Giros Gratis, cada vez que obtienes un giro ganatorio y aparece un orbe multiplicador en pantalla, el valor de ese orbe <strong>se SUMA al Multiplicador Global</strong>. Este multiplicador total no se reinicia nunca y multiplicará cada nueva ganancia que logres en el bonus.</p>
+
+                <hr>
+
+                <h3>GIROS GRATIS Y SUPER BONUS</h3>
+                <ul>
+                    <li><strong>Inicio:</strong> 4 o más Scatters (⚡) otorgan <strong>15 Giros Gratis</strong>.</li>
+                    <li><strong>Retrigger:</strong> Conseguir 3 o más Scatters durante el bonus añade <strong>+5 Giros Gratis extra</strong>.</li>
+                    <li><strong>Super Bonus (x500):</strong> Garantiza 15 giros, elimina los orbes de valor bajo y hace que Zeus lance rayos multiplicadores épicos de mínimo x15 en adelante con altísima frecuencia.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
