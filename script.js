@@ -76,6 +76,10 @@ const infoBtn = document.getElementById('info-btn');
 const infoModal = document.getElementById('info-modal');
 const closeModal = document.getElementById('close-modal');
 
+// DOM Elements Control de Sonido
+const soundToggleBtn = document.getElementById('sound-toggle-btn');
+const volumeSlider = document.getElementById('volume-slider');
+
 // DOM Elements AutoPlay y Velocidad
 const mainSpeedBtn = document.getElementById('main-speed-btn');
 let currentSpeedMode = 0; 
@@ -90,6 +94,42 @@ const autoStopWin = document.getElementById('auto-stop-win');
 
 // Delay con Multiplicador de Velocidad
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms * speedMult));
+
+// ==========================================
+// CONTROL DE SONIDO
+// ==========================================
+// Los navegadores bloquean el audio hasta el primer gesto del
+// usuario (click/tap). Con esto se activa el contexto de audio
+// y arranca la música ambiental del Olimpo en la primera interacción.
+function unlockAudioOnce() {
+    SoundEngine.init();
+    SoundEngine.resume();
+    SoundEngine.startMusic();
+    document.removeEventListener('click', unlockAudioOnce);
+    document.removeEventListener('touchstart', unlockAudioOnce);
+}
+document.addEventListener('click', unlockAudioOnce);
+document.addEventListener('touchstart', unlockAudioOnce);
+
+soundToggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    SoundEngine.init();
+    const nowMuted = SoundEngine.toggleMute();
+    soundToggleBtn.innerText = nowMuted ? '🔇' : '🔊';
+});
+
+volumeSlider.addEventListener('input', (e) => {
+    SoundEngine.init();
+    const v = parseInt(e.target.value) / 100;
+    SoundEngine.setVolume(v);
+    if (v > 0 && SoundEngine.isMuted()) {
+        SoundEngine.toggleMute();
+        soundToggleBtn.innerText = '🔊';
+    }
+    if (v === 0 && !SoundEngine.isMuted()) {
+        soundToggleBtn.innerText = '🔇';
+    }
+});
 
 // ==========================================
 // PANTALLA DE CARGA
@@ -249,6 +289,7 @@ function updateUI() {
 
 betPlus.addEventListener('click', () => {
     if (isSpinning || isFreeSpinsMode || autoSpinActive) return;
+    SoundEngine.betChange();
     if (baseBet < 2000) { 
         if (baseBet < 20) baseBet += 2.00;
         else if (baseBet < 100) baseBet += 10.00;
@@ -261,6 +302,7 @@ betPlus.addEventListener('click', () => {
 
 betMinus.addEventListener('click', () => {
     if (isSpinning || isFreeSpinsMode || autoSpinActive) return;
+    SoundEngine.betChange();
     if (baseBet > 2.00) { 
         if (baseBet <= 20) baseBet -= 2.00;
         else if (baseBet <= 100) baseBet -= 10.00;
@@ -281,11 +323,13 @@ doubleChanceToggle.addEventListener('change', (e) => {
         e.target.checked = !e.target.checked;
         return;
     }
+    SoundEngine.toggleSwitch();
     doubleChance = e.target.checked;
     calculateActualBet();
 });
 
 mainSpeedBtn.addEventListener('click', () => {
+    SoundEngine.click();
     currentSpeedMode = (currentSpeedMode + 1) % 3;
     if(currentSpeedMode === 0) { speedMult = 1; mainSpeedBtn.innerText = "▶ NORM"; }
     if(currentSpeedMode === 1) { speedMult = 0.4; mainSpeedBtn.innerText = "⏩ TURBO"; }
@@ -296,12 +340,14 @@ btnBuyFree.addEventListener('click', async () => {
     if (isSpinning || isFreeSpinsMode || autoSpinActive) return;
     const cost = baseBet * 100;
     if (credit >= cost) {
+        SoundEngine.click();
         credit -= cost;
         guardarSaldoEnBD(); 
         updateUI();
         isSuperBonusMode = false; 
         triggerFreeSpins(15);
     } else {
+        SoundEngine.insufficientCredit();
         statusMessage.innerText = "CRÉDITO INSUFICIENTE";
     }
 });
@@ -310,12 +356,14 @@ btnBuySuper.addEventListener('click', async () => {
     if (isSpinning || isFreeSpinsMode || autoSpinActive) return;
     const cost = baseBet * 500;
     if (credit >= cost) {
+        SoundEngine.click();
         credit -= cost;
         guardarSaldoEnBD(); 
         updateUI();
         isSuperBonusMode = true; 
         triggerFreeSpins(15);
     } else {
+        SoundEngine.insufficientCredit();
         statusMessage.innerText = "CRÉDITO INSUFICIENTE";
     }
 });
@@ -323,12 +371,14 @@ btnBuySuper.addEventListener('click', async () => {
 spinBtn.addEventListener('click', async () => {
     if (isSpinning || isFreeSpinsMode || autoSpinActive) return;
     if (credit >= actualBet) {
+        SoundEngine.click();
         credit -= actualBet;
         guardarSaldoEnBD(); 
         winDisplay.innerText = "$0.00";
         updateUI();
         executeSpin();
     } else {
+        SoundEngine.insufficientCredit();
         statusMessage.innerText = "CRÉDITO INSUFICIENTE";
     }
 });
@@ -344,10 +394,12 @@ async function executeSpin() {
 
     const cells = document.querySelectorAll('.slot-cell');
     cells.forEach(cell => cell.classList.add('spinning'));
+    SoundEngine.spinStart();
     await delay(600);
 
     generateNewSymbols();
     renderGridDOM();
+    SoundEngine.reelLand();
 
     await handleTumbles();
 }
@@ -470,6 +522,7 @@ async function handleTumbles() {
         if (winningSymbolsList.length > 0) {
             tumbleCount++;
             accumulatedSpinWin += winThisStep;
+            SoundEngine.tumbleWin(tumbleCount);
 
             spinWinAccumulator.style.display = 'flex';
             accumValue.innerText = `$${accumulatedSpinWin.toFixed(2)}`;
@@ -520,6 +573,7 @@ async function handleTumbles() {
             if (isFreeSpinsMode) {
                 globalMultiplier += spinOrbsSum;
                 updateUI(); 
+                SoundEngine.globalMultiplierRise();
                 
                 accumMult.innerText = ` x ⚡${globalMultiplier}`;
                 await delay(1200); 
@@ -527,6 +581,7 @@ async function handleTumbles() {
                 finalSpinWin = accumulatedSpinWin * globalMultiplier;
                 statusMessage.innerText = `¡PODER DE ZEUS! MULT. GLOBAL x${globalMultiplier}`;
             } else {
+                SoundEngine.orbCollect(spinOrbsSum);
                 accumMult.innerText = ` x 🔮${spinOrbsSum}`;
                 await delay(1200); 
                 finalSpinWin = accumulatedSpinWin * spinOrbsSum;
@@ -543,6 +598,7 @@ async function handleTumbles() {
         
         if (sessionTotal >= winCapLimit) {
             finalSpinWin = winCapLimit - (isFreeSpinsMode ? totalFsWin : 0);
+            SoundEngine.maxWin();
             statusMessage.innerText = "⚡ ¡MAX WIN 5000X ALCANZADO! ⚡";
             accumValue.innerText = `MAX WIN $${finalSpinWin.toFixed(2)}`;
             if (isFreeSpinsMode) {
@@ -628,6 +684,9 @@ function triggerFreeSpins(count) {
     
     saveGameState();
 
+    SoundEngine.scatterTrigger();
+    SoundEngine.setBonusMode(true);
+
     bonusHeaderContainer.style.display = 'flex';
     bonusTotalAmount.innerText = "$0.00";
     updateUI();
@@ -671,6 +730,9 @@ function finishFreeSpinsMode() {
     
     saveGameState();
 
+    SoundEngine.freeSpinsEnd();
+    SoundEngine.setBonusMode(false);
+
     fsOverlayTitle.innerText = "¡FIN DEL REINO DIVINO!";
     fsCountText.innerText = `GANANCIA TOTAL: $${totalFsWin.toFixed(2)}`;
     fsOverlay.style.display = 'flex';
@@ -690,13 +752,17 @@ function finishFreeSpinsMode() {
 // ==========================================
 
 autoBtn.addEventListener('click', () => { 
-    if (!isSpinning && !isFreeSpinsMode && !autoSpinActive) autoModal.style.display = 'flex'; 
+    if (!isSpinning && !isFreeSpinsMode && !autoSpinActive) {
+        SoundEngine.click();
+        autoModal.style.display = 'flex'; 
+    }
 });
-closeAutoModalBtn.addEventListener('click', () => { autoModal.style.display = 'none'; });
+closeAutoModalBtn.addEventListener('click', () => { SoundEngine.click(); autoModal.style.display = 'none'; });
 window.addEventListener('click', (e) => { if (e.target === autoModal) autoModal.style.display = 'none'; });
 
 document.querySelectorAll('.auto-count-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
+        SoundEngine.click();
         autoSpinsLeft = parseInt(e.target.getAttribute('data-spins'));
         
         let selectSpd = parseFloat(autoSpeedSelect.value);
@@ -714,6 +780,7 @@ document.querySelectorAll('.auto-count-btn').forEach(btn => {
 });
 
 stopAutoBtn.addEventListener('click', () => {
+    SoundEngine.click();
     autoSpinActive = false;
     autoSpinsLeft = 0;
     updateAutoUI();
@@ -742,6 +809,7 @@ async function startAutoPlay() {
         if (!autoSpinActive) break;
 
         if (credit < actualBet) {
+            SoundEngine.insufficientCredit();
             statusMessage.innerText = "CRÉDITO INSUFICIENTE PARA AUTO";
             autoSpinActive = false;
             break;
@@ -762,6 +830,6 @@ async function startAutoPlay() {
     updateAutoUI();
 }
 
-infoBtn.addEventListener('click', () => { if (!isSpinning) infoModal.style.display = 'flex'; });
-closeModal.addEventListener('click', () => { infoModal.style.display = 'none'; });
+infoBtn.addEventListener('click', () => { if (!isSpinning) { SoundEngine.click(); infoModal.style.display = 'flex'; } });
+closeModal.addEventListener('click', () => { SoundEngine.click(); infoModal.style.display = 'none'; });
 window.addEventListener('click', (e) => { if (e.target === infoModal) infoModal.style.display = 'none'; });

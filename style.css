@@ -44,6 +44,60 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
 
+/* Control de Volumen */
+.sound-control {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(20, 5, 35, 0.75);
+    border: 2px solid var(--olympus-gold);
+    border-radius: 20px;
+    padding: 8px 14px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    backdrop-filter: blur(6px);
+}
+.sound-btn {
+    background: none;
+    border: none;
+    color: var(--olympus-gold);
+    font-size: 20px;
+    cursor: pointer;
+    line-height: 1;
+    padding: 0;
+    filter: drop-shadow(0 0 4px rgba(255, 215, 0, 0.4));
+}
+.volume-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 90px;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(to right, var(--lightning-blue), var(--olympus-gold));
+    outline: none;
+    cursor: pointer;
+}
+.volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--olympus-gold);
+    border: 2px solid #000;
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.7);
+}
+.volume-slider::-moz-range-thumb {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    background: var(--olympus-gold);
+    border: 2px solid #000;
+    cursor: pointer;
+    box-shadow: 0 0 6px rgba(255, 215, 0, 0.7);
+}
+
 /* Fondo del Olimpo animado */
 .olympus-bg {
     position: absolute;
@@ -571,6 +625,16 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
         top: 10px;
         left: 10px;
     }
+
+    .sound-control {
+        top: 10px;
+        right: 10px;
+        padding: 6px 10px;
+        gap: 6px;
+        border-radius: 16px;
+    }
+    .sound-btn { font-size: 16px; }
+    .volume-slider { width: 60px; }
 
     .game-container {
         flex-direction: column; 
