@@ -1,52 +1,43 @@
-// ==========================================
-// 1. CONFIGURACIÓN DE SUPABASE
-// ==========================================
 const supabaseUrl = 'https://wgqqbahoalozgfukioza.supabase.co';
 const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndncXFiYWhvYWxvemdmdWtpb3phIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQyNTA3OTYsImV4cCI6MjA5OTgyNjc5Nn0.v_kpYceS8ceIUBNaLLHjfyBeFA2Y3lDRy7Yn6cb5Uz8';
 const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
 
 let currentUser = null;
 
-// Símbolos oficiales con pagos MUY reducidos (Volatilidad de Casino Real)
 const symbols = [
-    { id: 'corona', img: 'corona.png', val: 2.5 },    
-    { id: 'reloj', img: 'reloj.png', val: 1.2 },       
-    { id: 'anillo', img: 'anillo.png', val: 0.8 },     
-    { id: 'caliz', img: 'caliz.png', val: 0.5 },       
-    { id: 'roja', img: 'roja.png', val: 0.4 },         
-    { id: 'morada', img: 'morada.png', val: 0.3 },   
-    { id: 'amarilla', img: 'amarilla.png', val: 0.2 }, 
-    { id: 'verde', img: 'verde.png', val: 0.15 },     
-    { id: 'azul', img: 'azul.png', val: 0.1 },       
-    { id: 'zeus', img: 'zeus.png', val: 1.5 }         
+    { id: 'corona', img: 'corona.png', val: 2.5 },
+    { id: 'reloj', img: 'reloj.png', val: 1.2 },
+    { id: 'anillo', img: 'anillo.png', val: 0.8 },
+    { id: 'caliz', img: 'caliz.png', val: 0.5 },
+    { id: 'roja', img: 'roja.png', val: 0.4 },
+    { id: 'morada', img: 'morada.png', val: 0.3 },
+    { id: 'amarilla', img: 'amarilla.png', val: 0.2 },
+    { id: 'verde', img: 'verde.png', val: 0.15 },
+    { id: 'azul', img: 'azul.png', val: 0.1 },
+    { id: 'zeus', img: 'zeus.png', val: 1.5 }
 ];
 
-// Estado General
-let credit = 0; 
+let credit = 0;
 let baseBet = 2.00;
 let actualBet = 2.00;
 let doubleChance = false;
 let isSpinning = false;
 const MAX_WIN_MULT = 5000;
 
-// Estado AutoPlay y Velocidad
 let autoSpinActive = false;
 let autoSpinsLeft = 0;
 let stopOnBonus = false;
 let stopWinLimit = 0;
-let speedMult = 1; 
+let speedMult = 1;
 
-// Estado de Giros Gratis
 let isFreeSpinsMode = false;
-let isSuperBonusMode = false; 
+let isSuperBonusMode = false;
 let freeSpinsLeft = 0;
 let totalFsWin = 0;
 let globalMultiplier = 1;
 
-// Grilla
 let gridState = [];
 
-// DOM Elements
 const gridContainer = document.getElementById('slot-grid');
 const spinBtn = document.getElementById('spin-button');
 const creditDisplay = document.getElementById('credit-display');
@@ -76,13 +67,11 @@ const infoBtn = document.getElementById('info-btn');
 const infoModal = document.getElementById('info-modal');
 const closeModal = document.getElementById('close-modal');
 
-// DOM Elements Control de Sonido
 const soundToggleBtn = document.getElementById('sound-toggle-btn');
 const volumeSlider = document.getElementById('volume-slider');
 
-// DOM Elements AutoPlay y Velocidad
 const mainSpeedBtn = document.getElementById('main-speed-btn');
-let currentSpeedMode = 0; 
+let currentSpeedMode = 0;
 
 const autoBtn = document.getElementById('open-auto-modal');
 const stopAutoBtn = document.getElementById('stop-auto-btn');
@@ -92,15 +81,8 @@ const autoSpeedSelect = document.getElementById('auto-speed-select');
 const autoStopBonus = document.getElementById('auto-stop-bonus');
 const autoStopWin = document.getElementById('auto-stop-win');
 
-// Delay con Multiplicador de Velocidad
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms * speedMult));
 
-// ==========================================
-// CONTROL DE SONIDO
-// ==========================================
-// Los navegadores bloquean el audio hasta el primer gesto del
-// usuario (click/tap). Con esto se activa el contexto de audio
-// y arranca la música ambiental del Olimpo en la primera interacción.
 function unlockAudioOnce() {
     SoundEngine.init();
     SoundEngine.resume();
@@ -131,11 +113,8 @@ volumeSlider.addEventListener('input', (e) => {
     }
 });
 
-// ==========================================
-// PANTALLA DE CARGA
-// ==========================================
 window.onload = () => {
-    // Exactamente 4 segundos de carga
+
     setTimeout(() => {
         const loader = document.getElementById('loading-screen');
         loader.style.opacity = '0';
@@ -143,35 +122,30 @@ window.onload = () => {
             loader.style.display = 'none';
             verificarSesionYJugar();
         }, 500);
-    }, 4000); 
+    }, 4000);
 };
-
-
-// ==========================================
-// 2. LÓGICA DE AUTENTICACIÓN Y SALDOS DE SUPABASE
-// ==========================================
 
 async function verificarSesionYJugar() {
     statusMessage.innerText = "CARGANDO SALDO...";
     const { data: { session } } = await supabaseClient.auth.getSession();
-    
+
     if (!session) {
-        window.location.href = 'index.html'; 
+        window.location.href = 'index.html';
         return;
     }
-    
+
     currentUser = session.user;
     const { data: perfilData } = await supabaseClient.from('perfiles').select('saldo').eq('id', currentUser.id).single();
 
     if (perfilData) {
         credit = parseFloat(perfilData.saldo);
     } else {
-        credit = 10000; 
-        await guardarSaldoEnBD(); 
+        credit = 10000;
+        await guardarSaldoEnBD();
     }
 
     statusMessage.innerText = "¡QUE LOS DIOSES TE BENDIGAN!";
-    
+
     if(!loadBonusState()) {
         initGrid();
     }
@@ -182,9 +156,6 @@ async function guardarSaldoEnBD() {
     await supabaseClient.from('perfiles').upsert({ id: currentUser.id, saldo: credit });
 }
 
-// ==========================================
-// 3. GUARDADO DEL ESTADO (Para Bonus interrumpidos)
-// ==========================================
 function saveGameState() {
     if (isFreeSpinsMode) {
         const state = {
@@ -213,12 +184,12 @@ function loadBonusState() {
         globalMultiplier = state.globalMultiplier;
         baseBet = state.baseBet;
         actualBet = state.actualBet;
-        
+
         if (state.doubleChance !== undefined) {
             doubleChance = state.doubleChance;
             doubleChanceToggle.checked = doubleChance;
         }
-        
+
         calculateActualBet();
 
         bonusHeaderContainer.style.display = 'flex';
@@ -236,15 +207,11 @@ function loadBonusState() {
     return false;
 }
 
-// ==========================================
-// 4. FUNCIONES DEL JUEGO Y APUESTAS
-// ==========================================
-
 function initGrid() {
     gridContainer.innerHTML = '';
     gridState = [];
     for (let i = 0; i < 30; i++) {
-        const randomSym = symbols[4 + Math.floor(Math.random() * 5)]; 
+        const randomSym = symbols[4 + Math.floor(Math.random() * 5)];
         gridState.push({ ...randomSym });
     }
     renderGridDOM();
@@ -256,8 +223,8 @@ function renderGridDOM() {
     gridState.forEach((item, index) => {
         const cell = document.createElement('div');
         cell.classList.add('slot-cell');
-        cell.classList.add('landing'); 
-        
+        cell.classList.add('landing');
+
         if (item) {
             const img = document.createElement('img');
             img.src = item.img;
@@ -290,26 +257,26 @@ function updateUI() {
 betPlus.addEventListener('click', () => {
     if (isSpinning || isFreeSpinsMode || autoSpinActive) return;
     SoundEngine.betChange();
-    if (baseBet < 2000) { 
+    if (baseBet < 2000) {
         if (baseBet < 20) baseBet += 2.00;
         else if (baseBet < 100) baseBet += 10.00;
         else if (baseBet < 500) baseBet += 50.00;
         else baseBet += 100.00;
         if (baseBet > 2000) baseBet = 2000;
-        calculateActualBet(); 
+        calculateActualBet();
     }
 });
 
 betMinus.addEventListener('click', () => {
     if (isSpinning || isFreeSpinsMode || autoSpinActive) return;
     SoundEngine.betChange();
-    if (baseBet > 2.00) { 
+    if (baseBet > 2.00) {
         if (baseBet <= 20) baseBet -= 2.00;
         else if (baseBet <= 100) baseBet -= 10.00;
         else if (baseBet <= 500) baseBet -= 50.00;
         else baseBet -= 100.00;
         if (baseBet < 2.00) baseBet = 2.00;
-        calculateActualBet(); 
+        calculateActualBet();
     }
 });
 
@@ -342,9 +309,9 @@ btnBuyFree.addEventListener('click', async () => {
     if (credit >= cost) {
         SoundEngine.click();
         credit -= cost;
-        guardarSaldoEnBD(); 
+        guardarSaldoEnBD();
         updateUI();
-        isSuperBonusMode = false; 
+        isSuperBonusMode = false;
         triggerFreeSpins(15);
     } else {
         SoundEngine.insufficientCredit();
@@ -358,9 +325,9 @@ btnBuySuper.addEventListener('click', async () => {
     if (credit >= cost) {
         SoundEngine.click();
         credit -= cost;
-        guardarSaldoEnBD(); 
+        guardarSaldoEnBD();
         updateUI();
-        isSuperBonusMode = true; 
+        isSuperBonusMode = true;
         triggerFreeSpins(15);
     } else {
         SoundEngine.insufficientCredit();
@@ -373,7 +340,7 @@ spinBtn.addEventListener('click', async () => {
     if (credit >= actualBet) {
         SoundEngine.click();
         credit -= actualBet;
-        guardarSaldoEnBD(); 
+        guardarSaldoEnBD();
         winDisplay.innerText = "$0.00";
         updateUI();
         executeSpin();
@@ -389,7 +356,7 @@ async function executeSpin() {
     spinWinAccumulator.style.display = 'none';
     accumValue.innerText = "$0.00";
     accumMult.innerText = "";
-    
+
     if (isFreeSpinsMode) saveGameState();
 
     const cells = document.querySelectorAll('.slot-cell');
@@ -404,9 +371,6 @@ async function executeSpin() {
     await handleTumbles();
 }
 
-// =====================================
-// MAGIA NEGRA DEL CASINO: VOLATILIDAD EXTREMA
-// =====================================
 function generateNewSymbols() {
     gridState = [];
     for (let i = 0; i < 30; i++) {
@@ -415,20 +379,18 @@ function generateNewSymbols() {
 }
 
 function getRandomSymbolWithProbability() {
-    // Al distribuir equitativamente los bajos, se forma un arcoíris en la grilla.
-    // Esto hace que sea MUCHO más difícil juntar 8 de un mismo color, forzando tiros muertos.
+
     const weights = {
         'azul': 200, 'verde': 190, 'amarilla': 180, 'morada': 170, 'roja': 150,
         'caliz': 40, 'anillo': 30, 'reloj': 15, 'corona': 5,
-        'zeus': doubleChance ? 3 : 1 
+        'zeus': doubleChance ? 3 : 1
     };
 
-    // Probabilidades súper reducidas para los orbes
     if (isFreeSpinsMode) {
-        if (isSuperBonusMode) weights['orbe'] = 5; 
-        else weights['orbe'] = 1.5; 
+        if (isSuperBonusMode) weights['orbe'] = 5;
+        else weights['orbe'] = 1.5;
     } else {
-        weights['orbe'] = 0.1; // Extremedamente raros en juego base
+        weights['orbe'] = 0.1;
     }
 
     let totalWeight = 0;
@@ -445,7 +407,6 @@ function getRandomSymbolWithProbability() {
         randomNum -= weights[key];
     }
 
-    // Si sale orbe, los multiplicadores altísimos son casi un milagro
     if (selectedId === 'orbe') {
         let multWeights;
         if (isSuperBonusMode) {
@@ -453,7 +414,7 @@ function getRandomSymbolWithProbability() {
         } else {
             multWeights = { 2: 20000, 3: 8000, 4: 4000, 5: 1500, 8: 800, 10: 400, 15: 150, 20: 80, 25: 30, 40: 10, 50: 5, 100: 2, 250: 0.5, 500: 0.1, 1000: 0.01 };
         }
-        
+
         let totalMWeight = 0;
         for (let m in multWeights) totalMWeight += multWeights[m];
 
@@ -476,7 +437,7 @@ function getRandomSymbolWithProbability() {
 
 async function handleTumbles() {
     let tumbleCount = 0;
-    let accumulatedSpinWin = 0; 
+    let accumulatedSpinWin = 0;
     let isWinningTumble = true;
     let extraFreeSpinsAwarded = false;
     let activatedFreeSpins = false;
@@ -493,14 +454,14 @@ async function handleTumbles() {
         const winningSymbolsList = [];
         let winThisStep = 0;
         const scatterQty = counts['zeus'] || 0;
-        
+
         if (scatterQty >= 4) {
             winningSymbolsList.push('zeus');
-            winThisStep += 1.5 * baseBet; // Scatter también paga menos
+            winThisStep += 1.5 * baseBet;
             if (!isFreeSpinsMode) activatedFreeSpins = true;
             else extraFreeSpinsAwarded = true;
         } else if (scatterQty === 3 && isFreeSpinsMode) {
-            winningSymbolsList.push('zeus'); 
+            winningSymbolsList.push('zeus');
             extraFreeSpinsAwarded = true;
         }
 
@@ -510,7 +471,7 @@ async function handleTumbles() {
             if (qty >= 8) {
                 winningSymbolsList.push(key);
                 const config = symbols.find(s => s.id === key);
-                
+
                 let factor = 1.0;
                 if (qty >= 10 && qty <= 11) factor = 2.5;
                 if (qty >= 12) factor = 5.0;
@@ -539,7 +500,7 @@ async function handleTumbles() {
             gridState.forEach((item, index) => {
                 if (item && winningSymbolsList.includes(item.id)) {
                     domCells[index].classList.add('win-pop');
-                    gridState[index] = null; 
+                    gridState[index] = null;
                 }
             });
 
@@ -561,48 +522,45 @@ async function handleTumbles() {
         finalSpinWin = accumulatedSpinWin;
 
         const domCells = document.querySelectorAll('.slot-cell');
-        
+
         gridState.forEach((item, index) => {
             if (item && item.isBomb) {
                 spinOrbsSum += item.multiplierValue;
-                domCells[index].classList.add('bomb-pulse'); 
+                domCells[index].classList.add('bomb-pulse');
             }
         });
 
         if (spinOrbsSum > 0) {
             if (isFreeSpinsMode) {
                 globalMultiplier += spinOrbsSum;
-                updateUI(); 
+                updateUI();
                 SoundEngine.globalMultiplierRise();
-                
+
                 accumMult.innerText = ` x ⚡${globalMultiplier}`;
-                await delay(1200); 
+                await delay(1200);
 
                 finalSpinWin = accumulatedSpinWin * globalMultiplier;
                 statusMessage.innerText = `¡PODER DE ZEUS! MULT. GLOBAL x${globalMultiplier}`;
             } else {
                 SoundEngine.orbCollect(spinOrbsSum);
                 accumMult.innerText = ` x 🔮${spinOrbsSum}`;
-                await delay(1200); 
+                await delay(1200);
                 finalSpinWin = accumulatedSpinWin * spinOrbsSum;
                 statusMessage.innerText = `¡RAYO DIVINO! MULTIPLICADO POR x${spinOrbsSum}`;
             }
             accumValue.innerText = `$${finalSpinWin.toFixed(2)}`;
-        } 
-        
-        // =====================================
-        // VERIFICACIÓN MAX WIN (5000x BaseBet)
-        // =====================================
+        }
+
         let winCapLimit = baseBet * MAX_WIN_MULT;
         let sessionTotal = isFreeSpinsMode ? (totalFsWin + finalSpinWin) : finalSpinWin;
-        
+
         if (sessionTotal >= winCapLimit) {
             finalSpinWin = winCapLimit - (isFreeSpinsMode ? totalFsWin : 0);
             SoundEngine.maxWin();
             statusMessage.innerText = "⚡ ¡MAX WIN 5000X ALCANZADO! ⚡";
             accumValue.innerText = `MAX WIN $${finalSpinWin.toFixed(2)}`;
             if (isFreeSpinsMode) {
-                freeSpinsLeft = 0; 
+                freeSpinsLeft = 0;
             }
         }
 
@@ -627,7 +585,7 @@ async function handleTumbles() {
     }
 
     updateUI();
-    if (isFreeSpinsMode) saveGameState(); 
+    if (isFreeSpinsMode) saveGameState();
     isSpinning = false;
 
     if (activatedFreeSpins) {
@@ -679,9 +637,9 @@ function triggerFreeSpins(count) {
     isFreeSpinsMode = true;
     freeSpinsLeft = count;
     totalFsWin = 0;
-    globalMultiplier = 0; 
+    globalMultiplier = 0;
     if(globalMultiplier === 0) globalMultiplier = 1;
-    
+
     saveGameState();
 
     SoundEngine.scatterTrigger();
@@ -727,7 +685,7 @@ function animateBonusHeader(targetValue) {
 function finishFreeSpinsMode() {
     isFreeSpinsMode = false;
     isSuperBonusMode = false;
-    
+
     saveGameState();
 
     SoundEngine.freeSpinsEnd();
@@ -739,7 +697,7 @@ function finishFreeSpinsMode() {
 
     setTimeout(() => {
         fsOverlay.style.display = 'none';
-        bonusHeaderContainer.style.display = 'none'; 
+        bonusHeaderContainer.style.display = 'none';
         spinWinAccumulator.style.display = 'none';
         statusMessage.innerText = autoSpinActive ? "CONTINUANDO AUTO..." : "PRESIONA PARA GIRAR";
         winDisplay.innerText = `$${totalFsWin.toFixed(2)}`;
@@ -747,14 +705,10 @@ function finishFreeSpinsMode() {
     }, 4000);
 }
 
-// ==========================================
-// 5. LÓGICA DE GIROS AUTOMÁTICOS (AUTOPLAY)
-// ==========================================
-
-autoBtn.addEventListener('click', () => { 
+autoBtn.addEventListener('click', () => {
     if (!isSpinning && !isFreeSpinsMode && !autoSpinActive) {
         SoundEngine.click();
-        autoModal.style.display = 'flex'; 
+        autoModal.style.display = 'flex';
     }
 });
 closeAutoModalBtn.addEventListener('click', () => { SoundEngine.click(); autoModal.style.display = 'none'; });
@@ -764,16 +718,16 @@ document.querySelectorAll('.auto-count-btn').forEach(btn => {
     btn.addEventListener('click', (e) => {
         SoundEngine.click();
         autoSpinsLeft = parseInt(e.target.getAttribute('data-spins'));
-        
+
         let selectSpd = parseFloat(autoSpeedSelect.value);
         if(selectSpd === 1) { currentSpeedMode = 0; mainSpeedBtn.innerText = "▶ NORM"; }
         if(selectSpd === 0.4) { currentSpeedMode = 1; mainSpeedBtn.innerText = "⏩ TURBO"; }
         if(selectSpd === 0.1) { currentSpeedMode = 2; mainSpeedBtn.innerText = "⚡ SUPER"; }
         speedMult = selectSpd;
-        
+
         stopOnBonus = autoStopBonus.checked;
         stopWinLimit = parseFloat(autoStopWin.value) || 0;
-        
+
         autoModal.style.display = 'none';
         startAutoPlay();
     });
@@ -814,18 +768,18 @@ async function startAutoPlay() {
             autoSpinActive = false;
             break;
         }
-        
+
         autoSpinsLeft--;
         updateAutoUI();
-        
+
         credit -= actualBet;
         guardarSaldoEnBD();
         winDisplay.innerText = "$0.00";
         updateUI();
-        
+
         await executeSpin();
     }
-    
+
     autoSpinActive = false;
     updateAutoUI();
 }

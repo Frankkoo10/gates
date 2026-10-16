@@ -25,7 +25,6 @@ body {
     position: relative;
 }
 
-/* Enlace logo al menú principal */
 .home-logo-link {
     position: absolute;
     top: 20px;
@@ -44,7 +43,6 @@ body {
     box-shadow: 0 4px 15px rgba(0,0,0,0.5);
 }
 
-/* Control de Volumen */
 .sound-control {
     position: absolute;
     top: 20px;
@@ -98,12 +96,11 @@ body {
     box-shadow: 0 0 6px rgba(255, 215, 0, 0.7);
 }
 
-/* Fondo del Olimpo animado */
 .olympus-bg {
     position: absolute;
     width: 100%;
     height: 100%;
-    background-image: 
+    background-image:
         radial-gradient(circle at 20% 20%, rgba(0, 240, 255, 0.15) 0%, transparent 30%),
         radial-gradient(circle at 80% 60%, rgba(255, 215, 0, 0.1) 0%, transparent 40%);
     animation: lightningPulse 8s infinite alternate;
@@ -119,7 +116,6 @@ body {
     100% { filter: brightness(1); }
 }
 
-/* Contenedor Principal */
 .game-container {
     display: flex;
     width: 95vw;
@@ -136,7 +132,6 @@ body {
     z-index: 1;
 }
 
-/* Panel Lateral */
 .side-panel {
     width: 23%;
     display: flex;
@@ -190,7 +185,6 @@ body {
     margin-top: 4px;
 }
 
-/* Caja de Apuesta Extra Ante */
 .bet-double-box {
     background: linear-gradient(to bottom, #2d5a27, #11280f);
     border: 3px solid var(--olympus-gold);
@@ -209,7 +203,6 @@ body {
 .bet-double-value { font-size: 22px; margin: 4px 0; color: #fff; }
 .bet-double-sub { font-size: 8px; text-align: center; margin-bottom: 8px; opacity: 0.9; }
 
-/* Switch Slider */
 .toggle-container {
     display: flex;
     align-items: center;
@@ -245,7 +238,6 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
 .slider.round { border-radius: 18px; }
 .slider.round:before { border-radius: 50%; }
 
-/* Área Principal */
 .main-game {
     flex-grow: 1;
     display: flex;
@@ -254,7 +246,6 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
     position: relative;
 }
 
-/* MARCADORES DEL BONUS ARRIBA */
 .bonus-header-container {
     display: none;
     justify-content: center;
@@ -299,13 +290,12 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
     text-shadow: 0 0 10px var(--lightning-blue), 2px 2px 0px #000;
 }
 
-/* ACUMULADOR DE POZO DEL TIRO EN CURSO */
 .spin-win-accumulator {
     background: rgba(10, 2, 20, 0.9);
     border: 2px solid var(--lightning-blue);
     border-radius: 30px;
     padding: 6px 15px;
-    display: none; 
+    display: none;
     justify-content: center;
     align-items: center;
     gap: 10px;
@@ -318,7 +308,6 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
 .accum-value { font-size: 18px; color: #fff; text-shadow: 0 0 10px var(--olympus-gold); }
 .accum-mult { font-size: 18px; color: var(--lightning-blue); font-weight: bold; }
 
-/* Contenedor Grilla */
 .slot-grid-container {
     flex-grow: 1;
     position: relative;
@@ -327,11 +316,10 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
     box-shadow: 0 15px 35px rgba(0,0,0,0.7), 0 0 25px rgba(255, 215, 0, 0.2);
     background: linear-gradient(135deg, #1b0630, #0c0217);
     overflow: hidden;
-    display: flex; 
+    display: flex;
     flex-direction: column;
 }
 
-/* Grilla Interna */
 .slot-grid {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -339,10 +327,9 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
     gap: 6px;
     padding: 8px;
     flex-grow: 1;
-    min-height: 0; 
+    min-height: 0;
 }
 
-/* Celdas de Gemas y Reliquias */
 .slot-cell {
     background: rgba(45, 15, 75, 0.5);
     border: 1px solid rgba(255, 215, 0, 0.15);
@@ -354,30 +341,27 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
     box-shadow: inset 0 0 10px rgba(0,0,0,0.5);
     position: relative;
     transition: transform 0.2s;
-    min-height: 0; 
+    min-height: 0;
     min-width: 0;
 }
 
-/* Gemas y otros símbolos */
 .slot-cell img {
     width: 90%;
     height: 90%;
-    object-fit: contain; 
-    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8)); 
+    object-fit: contain;
+    filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8));
     display: inline-block;
     transition: transform 0.2s ease;
 }
 
-/* Modificación específica para el Scatter de Zeus (bloque completo) */
 .slot-cell img[alt="zeus"] {
     width: 100%;
     height: 100%;
-    object-fit: cover; 
-    border-radius: 11px; 
-    filter: none; 
+    object-fit: cover;
+    border-radius: 11px;
+    filter: none;
 }
 
-/* Animación de Caída Genuina */
 .slot-cell.landing {
     animation: olympusFall 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
@@ -387,7 +371,6 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
     100% { transform: translateY(0) scale(1); opacity: 1; }
 }
 
-/* Orbes Multiplicadores de Zeus */
 .bomb-badge {
     position: absolute;
     bottom: 3px;
@@ -401,10 +384,9 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
     text-shadow: 1px 1px 2px black;
     box-shadow: 0 0 10px var(--lightning-blue);
     font-weight: bold;
-    z-index: 5; 
+    z-index: 5;
 }
 
-/* Animaciones de Juego usando etiquetas img */
 .slot-cell.spinning img { animation: spinFall 0.1s infinite linear; }
 .slot-cell.win-pop { animation: popOut 0.4s forwards; }
 
@@ -423,7 +405,6 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
     100% { transform: scale(1.15); box-shadow: 0 0 30px var(--olympus-gold); }
 }
 
-/* Barra de Control Inferior */
 .control-bar {
     background: linear-gradient(to right, #11011f, #2c0c4c, #11011f);
     border-radius: 40px;
@@ -494,7 +475,6 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
 
 .spin-btn:active { transform: scale(0.9); }
 
-/* ESTILOS BOTÓN AUTOPLAY */
 .auto-btn {
     background: linear-gradient(to bottom, #11011f, #3d1466);
     color: var(--olympus-gold);
@@ -515,7 +495,6 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
     margin-left: 5px; box-shadow: 0 0 10px red;
 }
 
-/* ESTILOS MODAL AUTOPLAY */
 .auto-modal {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: rgba(0, 0, 0, 0.85);
@@ -545,8 +524,6 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
 }
 .auto-count-btn:hover { background: var(--olympus-gold); color: black; transform: scale(1.05); }
 
-
-/* Overlays */
 .fs-overlay {
     position: fixed;
     top: 0; left: 0; width: 100vw; height: 100vh;
@@ -567,7 +544,6 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
 .fs-box h2 { font-size: 36px; margin-bottom: 12px; text-shadow: 3px 3px 0px #000; color: var(--lightning-blue); }
 .fs-box p { font-size: 22px; text-shadow: 2px 2px 0px #000; color: var(--olympus-gold); }
 
-/* MODAL DE INFORMACIÓN */
 .info-modal {
     position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
     background: rgba(0, 0, 0, 0.85);
@@ -605,21 +581,17 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
 .close-modal { position: absolute; top: 15px; right: 20px; font-size: 32px; color: #aaa; cursor: pointer; transition: 0.2s; }
 .close-modal:hover { color: #ff3333; transform: scale(1.1); }
 
-/* Animaciones */
 @keyframes spinFall { 0% { transform: translateY(-12px); } 100% { transform: translateY(12px); } }
 @keyframes popOut { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.3); opacity: 0.5; } 100% { transform: scale(0); opacity: 0; } }
 @keyframes scaleUp { 0% { transform: scale(0.6); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 @keyframes scaleIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
 
-/* =========================================
-   DISEÑO RESPONSIVO (MÓVILES)
-========================================= */
 @media (max-width: 850px) {
     body {
         align-items: flex-start;
-        overflow-y: auto; 
+        overflow-y: auto;
     }
-    
+
     .home-logo-link {
         width: 60px;
         top: 10px;
@@ -637,14 +609,14 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
     .volume-slider { width: 60px; }
 
     .game-container {
-        flex-direction: column; 
+        flex-direction: column;
         height: auto;
         min-height: 100vh;
         width: 100vw;
         border-radius: 0;
         border: none;
         padding: 10px;
-        padding-top: 50px; /* Espacio para logo en mobile */
+        padding-top: 50px;
         background: rgba(20, 5, 35, 0.85);
     }
 
@@ -660,11 +632,11 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
 
     .main-game {
         width: 100%;
-        order: 1; 
+        order: 1;
     }
 
     .btn-buy {
-        width: 48%; 
+        width: 48%;
         padding: 8px;
     }
 
@@ -749,7 +721,7 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
         font-size: 16px;
     }
 }
-/* --- PANTALLA DE CARGA --- */
+
 .loading-screen {
     position: fixed;
     top: 0; left: 0; width: 100vw; height: 100vh;
@@ -788,7 +760,7 @@ input:checked + .slider:before { transform: translateX(24px); background-color: 
     0% { width: 0%; }
     100% { width: 100%; }
 }
-/* BOTÓN DE VELOCIDAD */
+
 .speed-btn {
     background: linear-gradient(to bottom, #11011f, #3d1466); color: var(--olympus-gold);
     border: 2px solid var(--olympus-gold); padding: 8px; border-radius: 12px; font-size: 10px;
